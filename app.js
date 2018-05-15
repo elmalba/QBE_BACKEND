@@ -1,0 +1,1 @@
+require("./games/example/run")
