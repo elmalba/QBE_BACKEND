@@ -11,4 +11,4 @@ print 'Connected to', host
 z = sys.argv[2]
 s.send(z)
 print '[Waiting for response...]'
-print [s.recv(1024)]
+#print [s.recv(1024)]

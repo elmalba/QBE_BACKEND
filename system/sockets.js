@@ -1,7 +1,7 @@
 var net = require("net");
 QBE = require("./qbe.js");
 const HOST = "0.0.0.0";
-const PORT = 12000;
+const PORT = 12001;
 
 const create_sockets_nodes = (game, nodos, cadenas, cantidad_nodos) => {
   return new Promise((resolve, reject) => {

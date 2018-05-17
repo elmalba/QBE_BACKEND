@@ -13,8 +13,8 @@ class Game {
       nodo.left = null;
       nodo.rigth = null;
     }
-    for (let ix of this.cadenas) {
-      this.cadenas = true;
+    for (let cadena of this.cadenas) {
+      cadena = true;
     }
 
     this.init();

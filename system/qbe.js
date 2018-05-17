@@ -12,13 +12,14 @@ class QBE {
   constructor(game, nodes, node) {
     this.nodo = node;
     ++this.nodo;
-    this.nodos = nodes
+    this.nodos = nodes;
     this.socket = null;
     this.matrix = [initial];
     this.game = game;
     this.times = [];
     this.left = null;
     this.rigth = null;
+    this.BUTTON = this.rotate_left
   }
   set_references(nodos) {
     this.nodos = nodos;
@@ -29,22 +30,22 @@ class QBE {
 
     socket.on("data", data => {
       // try {
-        let option = `${String.fromCharCode(data[0])}${String.fromCharCode(
-          data[1]
-        )}`;
-        if (sockets[option] == undefined) {
-          socket.write("-1");
-          return;
-        } else {
-              data = "" + data;
-              data = data.substr(1);
-              data = data.substr(1);
+      let option = `${String.fromCharCode(data[0])}${String.fromCharCode(
+        data[1]
+      )}`;
+      if (sockets[option] == undefined) {
+        socket.write("-1");
+        return;
+      } else {
+        data = "" + data;
+        data = data.substr(1);
+        data = data.substr(1);
 
-          sockets[option](this, data, socket);
-        }
-    //  } catch (error) {
-    //    socket.write("-2");
-    //  }
+        sockets[option](this, data, socket);
+      }
+      //  } catch (error) {
+      //    socket.write("-2");
+      //  }
     });
   }
 
@@ -75,7 +76,7 @@ class QBE {
 
       let out = [];
 
-      //console.log(pixels.data.length)
+      
       let ixx = 0;
       for (let jx = 0; jx < 8; ++jx) {
         let in_out = new Array(8);
@@ -92,6 +93,7 @@ class QBE {
       //console.log(out);
       this.matrix = [out];
       this.time = [0];
+      this.rotate_left();
     });
   }
 
@@ -108,7 +110,13 @@ class QBE {
         let ixx = 0;
         for (let ix = 0; ix < 8; ++ix) {
           for (let jx = 0; jx < 8; ++jx) {
-            if (matrix[ix][jx][0] != pixels.data[ixx] || matrix[ix][jx][1] != pixels.data[+ixx + 1] || matrix[ix][jx][2] != pixels.data[+ixx + 2]) {
+
+            //console.log(matrix[jx][7 - ix],[ pixels.data[ixx],pixels.data[+ixx + 1] ,pixels.data[+ixx + 2]]   );
+            if (
+              matrix[7-jx][ix][0] != pixels.data[ixx] ||
+              matrix[7-jx][ix][1] != pixels.data[+ixx + 1] ||
+              matrix[7-jx][ix][2] != pixels.data[+ixx + 2]
+            ) {
               //console.log("ERR", matrix[ix][jx][0], pixels.data[ixx], matrix[ix][jx][1], pixels.data[+ixx + 1], matrix[ix][jx][2], pixels.data[+ixx + 2]);
               resolve(false);
             }
@@ -120,16 +128,50 @@ class QBE {
     });
   }
   error() {
-    this.matrix = [error];
+    //this.matrix = [error];
+    this.set_gif("system/qbe/error.gif") 
     this.time = [0];
   }
   success() {
-    this.matrix = [success];
+   this.set_gif("system/qbe/success.gif"); 
+   // this.matrix = [success];
     this.time = [0];
   }
   warning() {
+   
     this.matrix = [warning];
     this.time = [0];
+  }
+  rotate_rigth() {
+    let new_matrix = new Array(8);
+    let old_matrix = this.matrix[0];
+
+    for (let ix = 0; ix < 8; ++ix) {
+      new_matrix[ix] = new Array(8);
+      for (let jx = 0; jx < 8; ++jx) {
+        new_matrix[ix][7 - jx] = old_matrix[jx][ix];
+      }
+    }
+    this.matrix[0] = new_matrix;
+  }
+  rotate_left() {
+    let new_matrix = new Array(8);
+    let old_matrix = this.matrix[0];
+
+    for (let ix = 0; ix < 8; ++ix) {
+      new_matrix[ix] = new Array(8);
+      for (let jx = 0; jx < 8; ++jx) {
+        new_matrix[ix][jx] = old_matrix[jx][7-ix];
+      }
+    }
+    this.matrix[0] = new_matrix;
+  }
+
+  button(){
+    this.BUTTON();
+  }
+  set_button(func){
+    this.BUTTON = func;
   }
 
   print_screen() {
