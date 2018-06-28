@@ -1,46 +1,28 @@
 var net = require("net");
-QBE = require("./qbe.js");
+// QBE = require("./qbe.js");
 const HOST = "0.0.0.0";
 const PORT = 12001;
 
-const create_sockets_nodes = (game, nodos, cadenas, cantidad_nodos) => {
-  return new Promise((resolve, reject) => {
-    for (let ix = 0; ix < cantidad_nodos; ++ix) {
-      let nodo = new QBE(game,nodos, ix);
-      // nodo.set_number(1);
-      //nodo.warning();
-
-      // nodo.print_screen();
-
-      nodos[ix] = nodo;
-
-      cadenas[ix] = true;
-
+const create_sockets = (sumPORT,Set_socket) => {
+  
+    //console.log(sumPORT, PORT +sumPORT);
+   try {
       net
         .createServer(function(sock) {
-          nodo.set_socket(sock);
-          console.log(
-            "CONNECTED: " + sock.remoteAddress + ":" + sock.remotePort
-          );
-
-          console.log("ACA");
-
-          // We have a connection - a socket object is assigned to the connection automatically
-
-          // Add a 'data' event handler to this instance of socket
-
-          // Add a 'close' event handler to this instance of socket
+          //nodo.set_socket(sock);
+          console.log("CONNECTED: " + sock.remoteAddress + ":" + sock.remotePort);
+          console.log("NODO : ", sumPORT)
           sock.on("close", function(data) {
-            console.log(
-              "CLOSED: " + sock.remoteAddress + " " + sock.remotePort
-            );
+            console.log("CLOSED: " + sock.remoteAddress + " " + sock.remotePort);
           });
+
+          sock.on("error", () => console.log("errored"));
+          Set_socket(sock);
         })
-        .listen(+(PORT + +ix), HOST);
-      console.log("Conexion lista para " + HOST + ":" + (PORT + +ix));
-    }
-    resolve([nodos, cadenas]);
-  });
+        .listen(+(PORT + sumPORT), HOST);
+      console.log("Conexion lista para " + HOST + ":" + (PORT + sumPORT));
+    } catch (error) {}
+
 };
 
-module.exports = create_sockets_nodes;
+export default create_sockets;

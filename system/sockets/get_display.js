@@ -8,10 +8,17 @@ const check_number = num => {
 }
 module.exports = (qbe, data, socket) => {
   //qbe.print_screen();
-  var writeBuffer = Buffer(194);
+
+
+  if(qbe.node == 0) {
+
+    //console.log("MATRIX",qbe.matrix[0])
+  }
+
+  let writeBuffer = Buffer(194);
   writeBuffer[0] = 63;
   writeBuffer[193] = 126;
-  kx = 1;
+  let kx = 1;
   for (let ix = 0; ix < 8; ++ix)
     for (let jx = 0; jx < 8; ++jx)
       for (let fx = 0; fx < 3; ++fx) {

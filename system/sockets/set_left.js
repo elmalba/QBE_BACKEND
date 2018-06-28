@@ -1,28 +1,39 @@
-Nodos = require("../nodos.js");
+//Nodos = require("../nodos.js");
 module.exports = function(qbe, data, socket) {
-  console.log(qbe.nodo,+data);
-  //console.log(Nodos);
+  //console.log(qbe);
+
+  console.log("TOQUE ",data,qbe.node)
+
   data = (+data);
-  let cadenas = Nodos.get_cadenas_all();
+  let cadenas = qbe.game.cadenas;
+  //socket.write();
+ 
   if (+data != 0) {
-    let left = qbe.nodos[data - 1];
-    left.rigth = qbe;
+
+
+    let left = qbe.game.qbes[data - 1];
+    left.right = qbe;
     qbe.left = left;
-    cadenas[qbe.nodo - 1] = false;
+    qbe.game.cadenas[+qbe.node] = false
+    //qbe.game.cadenas[+qbe.nodo] = null;
+     //console.log("TOKE CADENA", cadenas);
+    qbe.game.check();
+
   } else {
-    cadenas[qbe.nodo - 1] = true;
-    if (qbe.rigth) {
-      qbe.rigth.left = null;
-      qbe.rigth = null;
+    cadenas[+qbe.node] = true;
+    if (qbe.right) {
+      qbe.right.left = null;
+      qbe.right = null;
     }
-    if (qbe.left) {
+   /* if (qbe.left) {
       qbe.left.rigth = null;
       qbe.left = null;
-    }
+    }*/
   }
-  qbe.game.check();
+  
   var writeBuffer = Buffer(2);
   writeBuffer[0] = 63;
   writeBuffer[1] = 126
   //socket.write(writeBuffer);
+  
 };

@@ -1,26 +1,42 @@
+import { AsyncResource } from "async_hooks";
+import create_sockets from "./sockets";
+
 const numbers = require("./qbe/numbers");
 const error = require("./qbe/error");
 const initial = require("./qbe/initial");
 const warning = require("./qbe/warning");
 const success = require("./qbe/success");
+var net = require("net");
 const chalk = require("chalk");
 const sockets = require("./sockets/router");
 const getPixels = require("get-pixels");
 const log = console.log;
 
+
+
 class QBE {
-  constructor(game, nodes, node) {
-    this.nodo = node;
-    ++this.nodo;
-    this.nodos = nodes;
+  constructor( node) {
+    this.node = node;
+   
     this.socket = null;
     this.matrix = [initial];
-    this.game = game;
+    this.game = null;
     this.times = [];
     this.left = null;
-    this.rigth = null;
-    this.BUTTON = this.rotate_left
+    this.right = null;
+    //this.right = this.rotate_left;
+    //console.log("CREANDO NODO");
   }
+  Set_Game(game){
+      this.game=game;
+  }
+  create_socket() {
+    // console.log("CREAR NODO");
+    create_sockets(this.node, sock => {
+      this.set_socket(sock);
+    });
+  }
+
   set_references(nodos) {
     this.nodos = nodos;
   }
@@ -28,6 +44,7 @@ class QBE {
   set_socket(socket) {
     //this.socket = socket;
 
+    console.log("READY");
     socket.on("data", data => {
       // try {
       let option = `${String.fromCharCode(data[0])}${String.fromCharCode(
@@ -49,17 +66,13 @@ class QBE {
     });
   }
 
-  sayHello() {
-    console.log("Hello, my name is " + this.name + ", I have ID: " + this.id);
-  }
-
-  receive() {
+  /* receive() {
     sock.on("data", function(data) {
       console.log("DATA " + sock.remoteAddress + ": " + data);
       // Write the data back to the socket, the client will receive it as data from the server
       //sock.write('You said "' + data + '"');
     });
-  }
+  }*/
 
   set_figure(figure) {}
   set_number(number) {
@@ -76,7 +89,6 @@ class QBE {
 
       let out = [];
 
-      
       let ixx = 0;
       for (let jx = 0; jx < 8; ++jx) {
         let in_out = new Array(8);
@@ -110,12 +122,11 @@ class QBE {
         let ixx = 0;
         for (let ix = 0; ix < 8; ++ix) {
           for (let jx = 0; jx < 8; ++jx) {
-
             //console.log(matrix[jx][7 - ix],[ pixels.data[ixx],pixels.data[+ixx + 1] ,pixels.data[+ixx + 2]]   );
             if (
-              matrix[7-jx][ix][0] != pixels.data[ixx] ||
-              matrix[7-jx][ix][1] != pixels.data[+ixx + 1] ||
-              matrix[7-jx][ix][2] != pixels.data[+ixx + 2]
+              matrix[7 - jx][ix][0] != pixels.data[ixx] ||
+              matrix[7 - jx][ix][1] != pixels.data[+ixx + 1] ||
+              matrix[7 - jx][ix][2] != pixels.data[+ixx + 2]
             ) {
               //console.log("ERR", matrix[ix][jx][0], pixels.data[ixx], matrix[ix][jx][1], pixels.data[+ixx + 1], matrix[ix][jx][2], pixels.data[+ixx + 2]);
               resolve(false);
@@ -129,20 +140,19 @@ class QBE {
   }
   error() {
     //this.matrix = [error];
-    this.set_gif("system/qbe/error.gif") 
+    this.set_gif("system/qbe/error.gif");
     this.time = [0];
   }
   success() {
-   this.set_gif("system/qbe/success.gif"); 
-   // this.matrix = [success];
+    this.set_gif("system/qbe/success.gif");
+    // this.matrix = [success];
     this.time = [0];
   }
   warning() {
-   
     this.matrix = [warning];
     this.time = [0];
   }
-  rotate_rigth() {
+  rotate_right() {
     let new_matrix = new Array(8);
     let old_matrix = this.matrix[0];
 
@@ -161,16 +171,16 @@ class QBE {
     for (let ix = 0; ix < 8; ++ix) {
       new_matrix[ix] = new Array(8);
       for (let jx = 0; jx < 8; ++jx) {
-        new_matrix[ix][jx] = old_matrix[jx][7-ix];
+        new_matrix[ix][jx] = old_matrix[jx][7 - ix];
       }
     }
     this.matrix[0] = new_matrix;
   }
 
-  button(){
+  button() {
     this.BUTTON();
   }
-  set_button(func){
+  set_button(func) {
     this.BUTTON = func;
   }
 
@@ -188,4 +198,4 @@ class QBE {
   }
 }
 
-module.exports = QBE;
+export default QBE;
